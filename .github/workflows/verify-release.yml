@@ -1,0 +1,61 @@
+name: verify release
+
+# The assets are the source of truth. This workflow re-hashes what was actually
+# published and rewrites SHA256SUMS and latest.json from those bytes, so the manifests
+# cannot drift from the files players download — even if a release is uploaded by hand,
+# from a machine that has never seen this repository.
+#
+# A green run means the manifests in the repository match the release exactly.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to verify (for example v0.9.0)
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-release
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || github.event.inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # A release event checks out the tag, which cannot be pushed to.
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Download the published assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "$TAG" --repo "${{ github.repository }}" --dir assets --clobber
+
+      - name: Re-hash the assets and refresh the manifests
+        run: |
+          python3 scripts/verify-release.py \
+            --assets assets \
+            --repo "${{ github.repository }}" \
+            --tag "$TAG" \
+            --write
+
+      - name: Commit the manifests if they changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- SHA256SUMS latest.json; then
+            echo "manifests already match $TAG"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add SHA256SUMS latest.json
+          git commit -m "refresh checksums and update manifest for $TAG"
+          git push

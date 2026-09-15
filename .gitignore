@@ -1,0 +1,11 @@
+# Installers live in Releases, never in the tree.
+assets/
+*.exe
+*.deb
+*.blockmap
+
+# Python bytecode from scripts/verify-release.py.
+__pycache__/
+*.pyc
+
+.DS_Store
