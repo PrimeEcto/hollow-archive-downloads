@@ -90,6 +90,14 @@ Compare the result with the table above, or with [`SHA256SUMS`](SHA256SUMS) in t
 which is regenerated from the published assets on every release. A mismatch means the file is not
 the one published here — do not run it.
 
+### For the site and the launcher
+
+Two generated files describe the current release without anyone having to edit a page by hand:
+[`latest.json`](latest.json) (version, per-platform URL, size, SHA-256) and
+[`SHA256SUMS`](SHA256SUMS). Both are attached to every release as well, so
+`.../releases/latest/download/latest.json` is a link that always resolves to the newest manifest,
+and `.../releases/download/<tag>/<file>` is the pattern for one specific file.
+
 ## What it needs
 
 - **Windows:** Windows 10 or 11, 64-bit, and a Minecraft: Java Edition account. No Java
