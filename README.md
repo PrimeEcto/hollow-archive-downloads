@@ -18,12 +18,12 @@ that a preset change needs no launcher release and no website deploy.
 
 ## Download
 
-**Latest release: [v0.9.0](https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.0)**
+**Latest release: [v0.9.1](https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.1)** — Windows sign-in fixed, signing out added, and the curated preset published.
 
 | Platform | Package | Size | SHA-256 |
 | --- | --- | --- | --- |
-| Windows 10 / 11, 64-bit | [HollowLauncher-0.9.0-setup.exe](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.0/HollowLauncher-0.9.0-setup.exe) | 114 MB | `c2c8c9e2b34f99c46b9c2157b3767ff38abfa3d1a7a34769df29db81e3720085` |
-| Linux x86-64 (Debian, Ubuntu, Pop!_OS, Mint) | [hollowlauncher_0.9.0_amd64.deb](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.0/hollowlauncher_0.9.0_amd64.deb) | 102 MB | `7b068b786fd9184a5d759eb31115a248bb57feae3828f5740787e956852325ec` |
+| Windows 10 / 11, 64-bit | [HollowLauncher-0.9.1-setup.exe](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.1/HollowLauncher-0.9.1-setup.exe) | 114 MB | `1a796a9917a5e310427a9609d8c97f1916935270ef7af73ae8a8309ffa0e85ab` |
+| Linux x86-64 (Debian, Ubuntu, Pop!_OS, Mint) | [hollowlauncher_0.9.1_amd64.deb](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.1/hollowlauncher_0.9.1_amd64.deb) | 102 MB | `50b3f773822e11c52d3b88a4e2d66592b8730d6c6adfb785949beadd17a9b375` |
 
 One launcher, one job: sign in with Microsoft, and it installs and keeps updated a curated
 Fabric 1.21.4 client — the Archive preset, its mods, and the Complementary Reimagined shader
@@ -32,7 +32,7 @@ what this launcher runs.
 
 ## Windows
 
-Run `HollowLauncher-0.9.0-setup.exe`. The wizard asks you four things, in this order:
+Run `HollowLauncher-0.9.1-setup.exe`. The wizard asks you four things, in this order:
 
 1. **The agreement.** The terms you are accepting are in
    [`TERMS-OF-SERVICE.md`](TERMS-OF-SERVICE.md), shown in full in the installer. **Next** stays
@@ -61,7 +61,7 @@ handles it — on Pop!_OS, double-clicking the file opens the COSMIC store and i
 there. From a terminal, the same thing:
 
 ```bash
-sudo apt install ./hollowlauncher_0.9.0_amd64.deb
+sudo apt install ./hollowlauncher_0.9.1_amd64.deb
 ```
 
 It goes where Debian packages go, not into a directory you pick:
@@ -84,12 +84,12 @@ anything about the launcher surprises you.
 
 ```bash
 # Linux
-sha256sum hollowlauncher_0.9.0_amd64.deb
+sha256sum hollowlauncher_0.9.1_amd64.deb
 ```
 
 ```powershell
 # Windows (PowerShell)
-Get-FileHash .\HollowLauncher-0.9.0-setup.exe -Algorithm SHA256
+Get-FileHash .\HollowLauncher-0.9.1-setup.exe -Algorithm SHA256
 ```
 
 Compare the result with the table above, or with [`SHA256SUMS`](SHA256SUMS) in this repository,
@@ -124,12 +124,17 @@ its accounts. No telemetry is sent anywhere, and there is no "players online" ba
 because there is no honest number to put in one yet.
 
 Prerequisite downloads — the engine and the preset — are verified against published hashes before
-they are used. If a download does not match, it is discarded rather than installed.
+they are used. If a download does not match, it is discarded rather than installed. The **preset**
+is published and installs on first run today; the **engine** build is not published yet, so the
+launcher uses a PrismLauncher you already have (leaving its instances, accounts, and config
+alone), and a machine without one cannot finish that step until the build and its manifest exist.
+That gap is documented, not hidden, and it is the next thing on this list.
 
 ## Version history
 
 | Version | Date | Windows | Linux | Notes |
 | --- | --- | --- | --- | --- |
+| 0.9.1 | 2026-09-15 | `HollowLauncher-0.9.1-setup.exe` | `hollowlauncher_0.9.1_amd64.deb` | Windows sign-in fixed (the engine's data folder is created when the account is written), signing out added to Settings, and the curated preset published so a first run installs it with nothing configured. |
 | 0.9.0 | 2026-09-15 | `HollowLauncher-0.9.0-setup.exe` | `hollowlauncher_0.9.0_amd64.deb` | First published installers: branded setup wizard with the agreement and shortcut options, and a package-manager-ready Linux build. |
 
 ## Licensing and attribution

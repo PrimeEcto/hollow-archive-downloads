@@ -1,18 +1,18 @@
 {
-  "version": "0.9.0",
-  "tag": "v0.9.0",
+  "version": "0.9.1",
+  "tag": "v0.9.1",
   "released": "2026-09-15",
-  "release_url": "https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.0",
+  "release_url": "https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.1",
   "windows": {
-    "file": "HollowLauncher-0.9.0-setup.exe",
-    "url": "https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.0/HollowLauncher-0.9.0-setup.exe",
-    "size": 119819793,
-    "sha256": "c2c8c9e2b34f99c46b9c2157b3767ff38abfa3d1a7a34769df29db81e3720085"
+    "file": "HollowLauncher-0.9.1-setup.exe",
+    "url": "https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.1/HollowLauncher-0.9.1-setup.exe",
+    "size": 119823756,
+    "sha256": "1a796a9917a5e310427a9609d8c97f1916935270ef7af73ae8a8309ffa0e85ab"
   },
   "linux": {
-    "file": "hollowlauncher_0.9.0_amd64.deb",
-    "url": "https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.0/hollowlauncher_0.9.0_amd64.deb",
-    "size": 107142184,
-    "sha256": "7b068b786fd9184a5d759eb31115a248bb57feae3828f5740787e956852325ec"
+    "file": "hollowlauncher_0.9.1_amd64.deb",
+    "url": "https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.1/hollowlauncher_0.9.1_amd64.deb",
+    "size": 107145908,
+    "sha256": "50b3f773822e11c52d3b88a4e2d66592b8730d6c6adfb785949beadd17a9b375"
   }
 }
