@@ -4,6 +4,10 @@ How v0.9.0 was cut, written down so the next one is the same. The build side liv
 launcher's own source tree (`HollowLauncher/app`); this repository is the download host, and it
 never builds anything itself.
 
+Two things are published here, on separate tracks: **launcher builds** (§1–§6 below) and **the
+curated preset** (§7), which the launcher installs into its engine and which changes far more
+often than the launcher does.
+
 ## What is needed
 
 - The launcher source, with `app/node_modules` installed (`npm install`).
@@ -103,6 +107,62 @@ hashes, and add a row to its version history.
 - Older releases stay published. Rolling back is pointing a link at an earlier tag, not deleting
   anything.
 
+## 7. The curated preset
+
+The preset the launcher installs is a Prism instance export: one zip holding `instance.cfg`,
+`mmc-pack.json` and the game directory. It lives here rather than on the website so that
+installing it does not depend on the site being up, and it is versioned on its own track —
+`preset-<version>` — because a mod being added or a config retuned has nothing to do with a
+launcher build.
+
+Build it from the server repository:
+
+```bash
+cd HollowArchiveServer
+node scripts/hollow-preset/build-prism.mjs --out /tmp/hollow-preset --version <version> \
+  --url https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/preset-<version>/hollow-archive.zip
+```
+
+The builder fails rather than warns if the pack is inconsistent (a missing mod dependency, a
+missing title-screen mod), and it prints the archive's sha256. Publish it with `--latest=false`:
+this repository's *latest* release is the launcher, and the
+`releases/latest/download/latest.json` URL the launcher's update check reads depends on that.
+
+```bash
+gh release create preset-<version> \
+  --repo PrimeEcto/hollow-archive-downloads \
+  --latest=false \
+  --title "The Hollow Archive preset <version>" \
+  --notes "<what changed, and the sha256 below>" \
+  /tmp/hollow-preset/hollow-archive.zip
+```
+
+Publishing triggers the same workflow, which re-downloads the archive, hashes it and writes
+[`preset.json`](../preset.json) — the document the launcher fetches before it downloads anything:
+
+```json
+{
+  "version": "<version>",
+  "url": "https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/preset-<version>/hollow-archive.zip",
+  "sha256": "...",
+  "instanceId": "hollow-archive"
+}
+```
+
+The launcher reads it from `raw.githubusercontent.com/PrimeEcto/hollow-archive-downloads/main/preset.json`,
+so the published preset is switched by this repository and nothing else — no launcher release, no
+website deploy. To do the workflow's work by hand:
+
+```bash
+python3 scripts/verify-preset.py --assets /tmp/hollow-preset \
+  --repo PrimeEcto/hollow-archive-downloads --tag preset-<version> --write
+```
+
+The sha256 in `preset.json` is what the launcher checks the archive against, and a mismatch
+means the install is refused and the download discarded. That is the point: the manifest and the
+archive are two statements about the same bytes, and this script is what keeps them from
+drifting.
+
 ## Known gaps
 
 - **No code signing.** SmartScreen and any Linux trust prompt will describe the publisher as
@@ -110,6 +170,9 @@ hashes, and add a row to its version history.
 - **No macOS build.** Notarisation is the blocker, not the build.
 - **No auto-update.** `latest.json` publishes the URL and hash an updater would need; nothing in
   the launcher consumes it yet.
+- **The preset's own history is the release list.** Older `preset-*` releases stay published, so a
+  rollback is editing `preset.json` back — but nothing does that automatically, and a player
+  halfway through an install would be checking against whatever is committed at that moment.
 - **No `copyright` file in the deb.** Debian policy expects `/usr/share/doc/hollowlauncher/copyright`
   summarising the licences; the package carries the licence field and the app carries the notices,
   but the file itself is not shipped yet.

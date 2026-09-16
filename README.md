@@ -10,6 +10,12 @@ source, published here as release assets, and linked from
 hash-verified by [`scripts/verify-release.py`](scripts/verify-release.py), which runs automatically
 on each release, and the machine-readable result lives in [`latest.json`](latest.json).
 
+It is also where the **curated preset** is published — the single zip the launcher installs into
+its engine. That lives on its own release track (`preset-<version>`, never this repository's
+*latest* release) and is named by [`preset.json`](preset.json), which the launcher reads and checks
+the archive against before installing anything. Players never download it by hand; it is here so
+that a preset change needs no launcher release and no website deploy.
+
 ## Download
 
 **Latest release: [v0.9.0](https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.0)**

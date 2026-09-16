@@ -1,9 +1,17 @@
 name: verify release
 
 # The assets are the source of truth. This workflow re-hashes what was actually
-# published and rewrites SHA256SUMS and latest.json from those bytes, so the manifests
-# cannot drift from the files players download — even if a release is uploaded by hand,
-# from a machine that has never seen this repository.
+# published and rewrites the manifests from those bytes, so they cannot drift from the
+# files players download — even if a release is uploaded by hand, from a machine that has
+# never seen this repository.
+#
+# Two kinds of release live here and they are verified separately:
+#
+#   v<version>          the launcher builds. SHA256SUMS and latest.json describe them.
+#   preset-<version>    the curated preset the launcher installs. preset.json describes it,
+#                       and it is deliberately *not* the repository's latest release, so the
+#                       `releases/latest/download/latest.json` URL keeps pointing at a
+#                       launcher build.
 #
 # A green run means the manifests in the repository match the release exactly.
 
@@ -39,9 +47,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh release download "$TAG" --repo "${{ github.repository }}" --dir assets --clobber
 
-      - name: Re-hash the assets and refresh the manifests
+      - name: Re-hash the launcher assets and refresh SHA256SUMS and latest.json
+        if: ${{ !startsWith(env.TAG, 'preset-') }}
         run: |
           python3 scripts/verify-release.py \
+            --assets assets \
+            --repo "${{ github.repository }}" \
+            --tag "$TAG" \
+            --write
+
+      - name: Re-hash the preset and refresh preset.json
+        if: ${{ startsWith(env.TAG, 'preset-') }}
+        run: |
+          python3 scripts/verify-preset.py \
             --assets assets \
             --repo "${{ github.repository }}" \
             --tag "$TAG" \
@@ -50,12 +68,16 @@ jobs:
       - name: Commit the manifests if they changed
         run: |
           set -euo pipefail
-          if git diff --quiet -- SHA256SUMS latest.json; then
+          for manifest in SHA256SUMS latest.json preset.json; do
+            if [ -f "$manifest" ]; then git add "$manifest"; fi
+          done
+
+          if git diff --cached --quiet; then
             echo "manifests already match $TAG"
             exit 0
           fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add SHA256SUMS latest.json
-          git commit -m "refresh checksums and update manifest for $TAG"
+          git commit -m "refresh manifests for $TAG"
           git push
