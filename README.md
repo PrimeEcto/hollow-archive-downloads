@@ -26,12 +26,12 @@ preset change or an engine bump therefore needs no launcher release and no websi
 
 ## Download
 
-**Latest release: [v0.9.3](https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.3)** — the engine is published and installed from here, so setting up a client no longer involves the website at all.
+**Latest release: [v0.9.4](https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.4)** — pressing Play now starts Minecraft instead of the engine's own first-run wizard, which is what could previously open in its place on every launch.
 
 | Platform | Package | Size | SHA-256 |
 | --- | --- | --- | --- |
-| Windows 10 / 11, 64-bit | [HollowLauncher-0.9.3-setup.exe](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.3/HollowLauncher-0.9.3-setup.exe) | 114 MB | `cc75a1cc1772d31b3b9e96efcfe7db3bec6ea4c83deafcf294b4189b9a939135` |
-| Linux x86-64 (Debian, Ubuntu, Pop!_OS, Mint) | [hollowlauncher_0.9.3_amd64.deb](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.3/hollowlauncher_0.9.3_amd64.deb) | 102 MB | `1ff1617b917660c53301773ff8b20efc4ed6ceab7a1da9b17acc59f77ad68561` |
+| Windows 10 / 11, 64-bit | [HollowLauncher-0.9.4-setup.exe](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.4/HollowLauncher-0.9.4-setup.exe) | 114 MB | `5c6ed5a0377b46c3da24c63b649867f8e4809803fb5b90c92a9c121303a63b90` |
+| Linux x86-64 (Debian, Ubuntu, Pop!_OS, Mint) | [hollowlauncher_0.9.4_amd64.deb](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.4/hollowlauncher_0.9.4_amd64.deb) | 102 MB | `737f5fe94ba1d317851a89377009af7ab4c65026b9cfea7bb013cde48fd79fc3` |
 
 One launcher, one job: sign in with Microsoft, and it installs and keeps updated a curated
 Fabric 1.21.4 client — the Archive preset, its mods, and the Complementary Reimagined shader
@@ -44,7 +44,7 @@ matching `voicechat` plugin) is not live yet, so there is nothing to hear until 
 
 ## Windows
 
-Run `HollowLauncher-0.9.3-setup.exe`. The wizard asks you four things, in this order:
+Run `HollowLauncher-0.9.4-setup.exe`. The wizard asks you four things, in this order:
 
 1. **The agreement.** The terms you are accepting are in
    [`TERMS-OF-SERVICE.md`](TERMS-OF-SERVICE.md), shown in full in the installer. **Next** stays
@@ -73,7 +73,7 @@ handles it — on Pop!_OS, double-clicking the file opens the COSMIC store and i
 there. From a terminal, the same thing:
 
 ```bash
-sudo apt install ./hollowlauncher_0.9.3_amd64.deb
+sudo apt install ./hollowlauncher_0.9.4_amd64.deb
 ```
 
 It goes where Debian packages go, not into a directory you pick:
@@ -96,12 +96,12 @@ anything about the launcher surprises you.
 
 ```bash
 # Linux
-sha256sum hollowlauncher_0.9.3_amd64.deb
+sha256sum hollowlauncher_0.9.4_amd64.deb
 ```
 
 ```powershell
 # Windows (PowerShell)
-Get-FileHash .\HollowLauncher-0.9.3-setup.exe -Algorithm SHA256
+Get-FileHash .\HollowLauncher-0.9.4-setup.exe -Algorithm SHA256
 ```
 
 Compare the result with the table above, or with [`SHA256SUMS`](SHA256SUMS) in this repository,
@@ -146,6 +146,7 @@ there is no engine for it rather than being handed one that cannot run.
 
 | Version | Date | Windows | Linux | Notes |
 | --- | --- | --- | --- | --- |
+| 0.9.4 | 2026-09-16 | `HollowLauncher-0.9.4-setup.exe` | `hollowlauncher_0.9.4_amd64.deb` | Pressing Play opens Minecraft rather than the engine's stock Quick Setup wizard. The engine it runs on has no "first run" flag — it inspects the state it finds, and `createSetupWizard()` runs *before* the deferred launch, so an unprepared root dropped the `--launch` and the game waited behind a language picker on every launch. HollowLauncher now seeds its own `prismlauncher.cfg` (language, theme, and the Java page only skipped when a Java 21 is really present) before starting the engine. |
 | 0.9.3 | 2026-09-16 | `HollowLauncher-0.9.3-setup.exe` | `hollowlauncher_0.9.3_amd64.deb` | The engine the launcher runs the game on is published here at last, as `engine-11.1.0`, and the launcher reads both its engine and its preset manifests from this repository rather than the website. Before it, a machine with no PrismLauncher already installed could not finish setting up. |
 | 0.9.2 | 2026-09-16 | `HollowLauncher-0.9.2-setup.exe` | `hollowlauncher_0.9.2_amd64.deb` | The first screen and the whole interface speak a player's language ("Hollow — Complementary / 49 components · Performance + Visuals") instead of bundling mod counts and loader versions, and the curated preset was republished as preset-1.0.1 with Simple Voice Chat in it. |
 | 0.9.1 | 2026-09-15 | `HollowLauncher-0.9.1-setup.exe` | `hollowlauncher_0.9.1_amd64.deb` | Windows sign-in fixed (the engine's data folder is created when the account is written), signing out added to Settings, and the curated preset published so a first run installs it with nothing configured. |
