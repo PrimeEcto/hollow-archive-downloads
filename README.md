@@ -10,20 +10,28 @@ source, published here as release assets, and linked from
 hash-verified by [`scripts/verify-release.py`](scripts/verify-release.py), which runs automatically
 on each release, and the machine-readable result lives in [`latest.json`](latest.json).
 
-It is also where the **curated preset** is published — the single zip the launcher installs into
-its engine. That lives on its own release track (`preset-<version>`, never this repository's
-*latest* release) and is named by [`preset.json`](preset.json), which the launcher reads and checks
-the archive against before installing anything. Players never download it by hand; it is here so
-that a preset change needs no launcher release and no website deploy.
+It is also where the other two things a launcher installs are published, each on its own release
+track (never this repository's *latest* release, which stays a launcher build):
+
+- the **curated preset** — the single zip the launcher unpacks into an instance, named by
+  [`preset.json`](preset.json);
+- the **engine** — the PrismLauncher build the launcher downloads and runs the game on, named by
+  [`engine.json`](engine.json). It is unmodified upstream PrismLauncher, re-hosted here so the URL
+  and the hash are ours, and it is deliberately **not** fetched from the website: the site is a
+  Vercel deployment, and setting up a client should not be able to fail because it is down.
+
+Players never download either by hand, and each manifest is written from the published bytes' own
+hash by the release workflow here, so neither can describe a build that was never uploaded. A
+preset change or an engine bump therefore needs no launcher release and no website deploy.
 
 ## Download
 
-**Latest release: [v0.9.2](https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.2)** — the launcher now says what you get in a player's words, and the preset ships proximity voice chat.
+**Latest release: [v0.9.3](https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.3)** — the engine is published and installed from here, so setting up a client no longer involves the website at all.
 
 | Platform | Package | Size | SHA-256 |
 | --- | --- | --- | --- |
-| Windows 10 / 11, 64-bit | [HollowLauncher-0.9.2-setup.exe](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.2/HollowLauncher-0.9.2-setup.exe) | 114 MB | `b7c42b7f6ea3b6ddcff18c983523bb8c1b9827dde0a8ad61dd5701536be6e8cc` |
-| Linux x86-64 (Debian, Ubuntu, Pop!_OS, Mint) | [hollowlauncher_0.9.2_amd64.deb](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.2/hollowlauncher_0.9.2_amd64.deb) | 102 MB | `3e19237ca701e377d8331f50c221b89fb5ce8b7042a67ae8ec7803a17ce54947` |
+| Windows 10 / 11, 64-bit | [HollowLauncher-0.9.3-setup.exe](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.3/HollowLauncher-0.9.3-setup.exe) | 114 MB | `cc75a1cc1772d31b3b9e96efcfe7db3bec6ea4c83deafcf294b4189b9a939135` |
+| Linux x86-64 (Debian, Ubuntu, Pop!_OS, Mint) | [hollowlauncher_0.9.3_amd64.deb](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.3/hollowlauncher_0.9.3_amd64.deb) | 102 MB | `1ff1617b917660c53301773ff8b20efc4ed6ceab7a1da9b17acc59f77ad68561` |
 
 One launcher, one job: sign in with Microsoft, and it installs and keeps updated a curated
 Fabric 1.21.4 client — the Archive preset, its mods, and the Complementary Reimagined shader
@@ -36,7 +44,7 @@ matching `voicechat` plugin) is not live yet, so there is nothing to hear until 
 
 ## Windows
 
-Run `HollowLauncher-0.9.2-setup.exe`. The wizard asks you four things, in this order:
+Run `HollowLauncher-0.9.3-setup.exe`. The wizard asks you four things, in this order:
 
 1. **The agreement.** The terms you are accepting are in
    [`TERMS-OF-SERVICE.md`](TERMS-OF-SERVICE.md), shown in full in the installer. **Next** stays
@@ -65,7 +73,7 @@ handles it — on Pop!_OS, double-clicking the file opens the COSMIC store and i
 there. From a terminal, the same thing:
 
 ```bash
-sudo apt install ./hollowlauncher_0.9.2_amd64.deb
+sudo apt install ./hollowlauncher_0.9.3_amd64.deb
 ```
 
 It goes where Debian packages go, not into a directory you pick:
@@ -88,12 +96,12 @@ anything about the launcher surprises you.
 
 ```bash
 # Linux
-sha256sum hollowlauncher_0.9.2_amd64.deb
+sha256sum hollowlauncher_0.9.3_amd64.deb
 ```
 
 ```powershell
 # Windows (PowerShell)
-Get-FileHash .\HollowLauncher-0.9.2-setup.exe -Algorithm SHA256
+Get-FileHash .\HollowLauncher-0.9.3-setup.exe -Algorithm SHA256
 ```
 
 Compare the result with the table above, or with [`SHA256SUMS`](SHA256SUMS) in this repository,
@@ -128,16 +136,17 @@ its accounts. No telemetry is sent anywhere, and there is no "players online" ba
 because there is no honest number to put in one yet.
 
 Prerequisite downloads — the engine and the preset — are verified against published hashes before
-they are used. If a download does not match, it is discarded rather than installed. The **preset**
-is published and installs on first run today; the **engine** build is not published yet, so the
-launcher uses a PrismLauncher you already have (leaving its instances, accounts, and config
-alone), and a machine without one cannot finish that step until the build and its manifest exist.
-That gap is documented, not hidden, and it is the next thing on this list.
+they are used, and a download that does not match is discarded rather than installed. Both are
+published here today and install on first run. If you would rather use the PrismLauncher you
+already have, the launcher will do that instead and leave its instances, accounts, and config
+alone. One limit is real: the published engine builds are x86-64 only, so Linux on `arm64` is told
+there is no engine for it rather than being handed one that cannot run.
 
 ## Version history
 
 | Version | Date | Windows | Linux | Notes |
 | --- | --- | --- | --- | --- |
+| 0.9.3 | 2026-09-16 | `HollowLauncher-0.9.3-setup.exe` | `hollowlauncher_0.9.3_amd64.deb` | The engine the launcher runs the game on is published here at last, as `engine-11.1.0`, and the launcher reads both its engine and its preset manifests from this repository rather than the website. Before it, a machine with no PrismLauncher already installed could not finish setting up. |
 | 0.9.2 | 2026-09-16 | `HollowLauncher-0.9.2-setup.exe` | `hollowlauncher_0.9.2_amd64.deb` | The first screen and the whole interface speak a player's language ("Hollow — Complementary / 49 components · Performance + Visuals") instead of bundling mod counts and loader versions, and the curated preset was republished as preset-1.0.1 with Simple Voice Chat in it. |
 | 0.9.1 | 2026-09-15 | `HollowLauncher-0.9.1-setup.exe` | `hollowlauncher_0.9.1_amd64.deb` | Windows sign-in fixed (the engine's data folder is created when the account is written), signing out added to Settings, and the curated preset published so a first run installs it with nothing configured. |
 | 0.9.0 | 2026-09-15 | `HollowLauncher-0.9.0-setup.exe` | `hollowlauncher_0.9.0_amd64.deb` | First published installers: branded setup wizard with the agreement and shortcut options, and a package-manager-ready Linux build. |

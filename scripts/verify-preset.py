@@ -60,14 +60,18 @@ def sha256_of(path, chunk=1 << 20):
     return digest.hexdigest()
 
 
-def read_released(path):
-    """Keep the release date stable across re-runs rather than stamping today's date
-    every time the workflow touches the manifest."""
+def read_released(path, tag):
+    """Keep the release date stable across re-runs of the same tag rather than stamping
+    today's date every time the workflow touches the manifest. A different tag is a
+    different preset, so its date must not be inherited."""
     try:
         with open(path, encoding="utf-8") as handle:
-            return json.load(handle).get("released")
+            manifest = json.load(handle)
     except (OSError, ValueError):
         return None
+    if manifest.get("tag") != tag:
+        return None
+    return manifest.get("released")
 
 
 def build_manifest(assets, repo, tag, instance_id, released):
@@ -108,7 +112,7 @@ def main():
     args = parser.parse_args()
 
     manifest_path = os.path.join(args.out, MANIFEST_NAME)
-    released = args.released or read_released(manifest_path) or datetime.date.today().isoformat()
+    released = args.released or read_released(manifest_path, args.tag) or datetime.date.today().isoformat()
     manifest = build_manifest(args.assets, args.repo, args.tag, args.instance_id, released)
 
     if args.check:
