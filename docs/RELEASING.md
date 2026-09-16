@@ -4,9 +4,10 @@ How v0.9.0 was cut, written down so the next one is the same. The build side liv
 launcher's own source tree (`HollowLauncher/app`); this repository is the download host, and it
 never builds anything itself.
 
-Two things are published here, on separate tracks: **launcher builds** (§1–§6 below) and **the
-curated preset** (§7), which the launcher installs into its engine and which changes far more
-often than the launcher does.
+Three things are published here, on separate tracks: **launcher builds** (§1–§6 below), **the
+curated preset** (§7), which the launcher installs into its engine, and **the engine build**
+(§8), which is the launcher that runs the game at all. The preset changes far more often than
+the launcher does, and the engine far less.
 
 ## What is needed
 
@@ -170,6 +171,49 @@ means the install is refused and the download discarded. That is the point: the 
 archive are two statements about the same bytes, and this script is what keeps them from
 drifting.
 
+## 8. The engine build
+
+HollowLauncher does not bundle an engine. On first run it downloads a PrismLauncher build,
+verifies it against a published SHA-256, and drives it with `--dir`, so a PrismLauncher,
+MultiMC or CurseForge installation the player already has is never read or modified. Since that
+download is a binary the launcher executes, an unverified one is refused outright — which is
+why the manifest has to exist before anyone can finish setting up, and why it is published here
+rather than served by the website: the site is a Vercel deployment and a prerequisite must not
+depend on it being up.
+
+The published build is unmodified upstream PrismLauncher, re-hosted so the URL and hash are
+ours and cannot disappear with someone else's release. Bump it by downloading the two assets,
+checking the Linux one against upstream's own `.zsync` (whose SHA-1 upstream publishes), and
+publishing them on their own track with `--latest=false`:
+
+```bash
+gh release create engine-<version> \
+  --repo PrimeEcto/hollow-archive-downloads \
+  --latest=false \
+  --title "Hollow Archive engine <version>" \
+  --notes-file docs/release-notes-engine-<version>.md \
+  assets/PrismLauncher-Linux-x86_64.AppImage \
+  assets/PrismLauncher-Windows-MinGW-w64-Portable-<version>.zip
+```
+
+Publishing triggers the same workflow, which re-downloads the assets, re-hashes them and writes
+[`engine.json`](../engine.json) — the document the launcher's `provision.ts` fetches. Expect
+`linux.x64` and `windows.x64`; the keys are `process.platform` and `process.arch` verbatim, so a
+platform with no entry is one the launcher will say it cannot install. To do the workflow's work
+by hand:
+
+```bash
+python3 scripts/verify-engine.py --assets assets \
+  --repo PrimeEcto/hollow-archive-downloads --tag engine-<version> --write
+```
+
+Two rules worth stating because they are easy to get wrong: the AppImage is what a Linux install
+chmods and runs, and the Windows zip is unpacked *beside* the binary the launcher runs, so the
+assets have to stay upstream's own files — a repacked archive whose `prismlauncher.exe` sits in a
+subdirectory installs an engine the launcher cannot find. And the release _must_ carry both
+platforms: `verify-engine.py` refuses to write a manifest from a single-asset release, which is
+the same rule [`verify-release.py`](verify-release.py) enforces for the installers.
+
 ## Known gaps
 
 - **No code signing.** SmartScreen and any Linux trust prompt will describe the publisher as
@@ -180,6 +224,9 @@ drifting.
 - **The preset's own history is the release list.** Older `preset-*` releases stay published, so a
   rollback is editing `preset.json` back — but nothing does that automatically, and a player
   halfway through an install would be checking against whatever is committed at that moment.
+- **The engine is a re-hosted upstream build, not one of ours.** Nothing is patched, so a
+  PrismLauncher bug is not something a HollowLauncher release can fix; what the fork buys us is a
+  URL and a hash we control. Only x86-64 is published, so `linux/arm64` says it cannot install.
 - **No `copyright` file in the deb.** Debian policy expects `/usr/share/doc/hollowlauncher/copyright`
   summarising the licences; the package carries the licence field and the app carries the notices,
   but the file itself is not shipped yet.

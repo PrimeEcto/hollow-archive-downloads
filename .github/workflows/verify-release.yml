@@ -5,13 +5,18 @@ name: verify release
 # files players download — even if a release is uploaded by hand, from a machine that has
 # never seen this repository.
 #
-# Two kinds of release live here and they are verified separately:
+# Three kinds of release live here and they are verified separately:
 #
 #   v<version>          the launcher builds. SHA256SUMS and latest.json describe them.
-#   preset-<version>    the curated preset the launcher installs. preset.json describes it,
-#                       and it is deliberately *not* the repository's latest release, so the
-#                       `releases/latest/download/latest.json` URL keeps pointing at a
-#                       launcher build.
+#   preset-<version>    the curated preset the launcher installs. preset.json describes it.
+#   engine-<version>    the PrismLauncher build the launcher downloads and runs. engine.json
+#                       describes it, and it is the download a launcher executes, so the hash
+#                       it publishes is the only thing standing between a player and
+#                       arbitrary code.
+#
+# All three tracks except the launcher's are deliberately *not* the repository's latest
+# release, so the `releases/latest/download/latest.json` URL keeps pointing at a launcher
+# build — the manifest a future updater would read.
 #
 # A green run means the manifests in the repository match the release exactly.
 
@@ -48,7 +53,7 @@ jobs:
         run: gh release download "$TAG" --repo "${{ github.repository }}" --dir assets --clobber
 
       - name: Re-hash the launcher assets and refresh SHA256SUMS and latest.json
-        if: ${{ !startsWith(env.TAG, 'preset-') }}
+        if: ${{ !startsWith(env.TAG, 'preset-') && !startsWith(env.TAG, 'engine-') }}
         run: |
           python3 scripts/verify-release.py \
             --assets assets \
@@ -65,10 +70,19 @@ jobs:
             --tag "$TAG" \
             --write
 
+      - name: Re-hash the engine build and refresh engine.json
+        if: ${{ startsWith(env.TAG, 'engine-') }}
+        run: |
+          python3 scripts/verify-engine.py \
+            --assets assets \
+            --repo "${{ github.repository }}" \
+            --tag "$TAG" \
+            --write
+
       - name: Commit the manifests if they changed
         run: |
           set -euo pipefail
-          for manifest in SHA256SUMS latest.json preset.json; do
+          for manifest in SHA256SUMS latest.json preset.json engine.json; do
             if [ -f "$manifest" ]; then git add "$manifest"; fi
           done
 
@@ -88,7 +102,16 @@ jobs:
       # v0.9.2 was published without them and the link 404'd until it was noticed, and
       # v0.9.1 shipped with only one of the two.
       - name: Attach the refreshed manifests to the release
-        if: ${{ !startsWith(env.TAG, 'preset-') }}
+        if: ${{ !startsWith(env.TAG, 'preset-') && !startsWith(env.TAG, 'engine-') }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "$TAG" latest.json SHA256SUMS --clobber
+
+      # Same reason as above: engine.json is the manifest a launcher fetches, and
+      # `releases/download/<tag>/engine.json` is the copy that is pinned to the build it
+      # describes, so the manifest cannot later describe a different one.
+      - name: Attach the refreshed manifest to the engine release
+        if: ${{ startsWith(env.TAG, 'engine-') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" engine.json --clobber
