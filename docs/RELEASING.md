@@ -89,6 +89,13 @@ downloads the assets back out of the release, re-hashes them, and rewrites `SHA2
 `latest.json` if they disagree with what was published. A green run means the two files in this
 repository describe the bytes in the release.
 
+The same run then attaches both files to the release itself, which is what keeps
+`releases/latest/download/latest.json` and `.../SHA256SUMS` resolving to the newest manifests. Do
+not upload them by hand as part of a release: the workflow writes them *after* it has hashed the
+published bytes, so a hand-uploaded copy is written from the local build and can disagree with
+what is in the release. (v0.9.2 shipped without them — the link 404'd until it was noticed — and
+v0.9.1 shipped with only `latest.json`, which is why the step exists.)
+
 To do the same thing by hand, from a directory holding the two assets:
 
 ```bash

@@ -81,3 +81,14 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "refresh manifests for $TAG"
           git push
+
+      # The manifests are also attached to the release itself, which is what makes
+      # `releases/latest/download/latest.json` a link that always resolves — the URL the
+      # site and a future updater read. Doing it here rather than by hand is deliberate:
+      # v0.9.2 was published without them and the link 404'd until it was noticed, and
+      # v0.9.1 shipped with only one of the two.
+      - name: Attach the refreshed manifests to the release
+        if: ${{ !startsWith(env.TAG, 'preset-') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" latest.json SHA256SUMS --clobber
