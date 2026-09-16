@@ -76,14 +76,20 @@ def describe(directory, name, version, repo, tag):
     }
 
 
-def read_released(path):
-    """Keep the release date stable across re-runs rather than stamping today's date
-    every time the workflow touches the manifest."""
+def read_released(path, tag):
+    """Keep the release date stable across re-runs of the same tag rather than stamping
+    today's date every time the workflow touches the manifest.
+
+    A different tag is a new release, and inheriting the previous one's date would put a
+    lie in the manifest: every release after the first would claim the first one's date."""
     try:
         with open(path, encoding="utf-8") as handle:
-            return json.load(handle).get("released")
+            manifest = json.load(handle)
     except (OSError, ValueError):
         return None
+    if manifest.get("tag") != tag:
+        return None
+    return manifest.get("released")
 
 
 def build_manifests(assets, repo, tag, released):
@@ -134,7 +140,7 @@ def main():
     manifest_path = os.path.join(args.out, MANIFEST_NAME)
     checksums_path = os.path.join(args.out, CHECKSUMS_NAME)
 
-    released = args.released or read_released(manifest_path) or datetime.date.today().isoformat()
+    released = args.released or read_released(manifest_path, args.tag) or datetime.date.today().isoformat()
     checksums, manifest = build_manifests(args.assets, args.repo, args.tag, released)
 
     if args.check:

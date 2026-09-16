@@ -18,21 +18,25 @@ that a preset change needs no launcher release and no website deploy.
 
 ## Download
 
-**Latest release: [v0.9.1](https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.1)** — Windows sign-in fixed, signing out added, and the curated preset published.
+**Latest release: [v0.9.2](https://github.com/PrimeEcto/hollow-archive-downloads/releases/tag/v0.9.2)** — the launcher now says what you get in a player's words, and the preset ships proximity voice chat.
 
 | Platform | Package | Size | SHA-256 |
 | --- | --- | --- | --- |
-| Windows 10 / 11, 64-bit | [HollowLauncher-0.9.1-setup.exe](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.1/HollowLauncher-0.9.1-setup.exe) | 114 MB | `1a796a9917a5e310427a9609d8c97f1916935270ef7af73ae8a8309ffa0e85ab` |
-| Linux x86-64 (Debian, Ubuntu, Pop!_OS, Mint) | [hollowlauncher_0.9.1_amd64.deb](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.1/hollowlauncher_0.9.1_amd64.deb) | 102 MB | `50b3f773822e11c52d3b88a4e2d66592b8730d6c6adfb785949beadd17a9b375` |
+| Windows 10 / 11, 64-bit | [HollowLauncher-0.9.2-setup.exe](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.2/HollowLauncher-0.9.2-setup.exe) | 114 MB | `b7c42b7f6ea3b6ddcff18c983523bb8c1b9827dde0a8ad61dd5701536be6e8cc` |
+| Linux x86-64 (Debian, Ubuntu, Pop!_OS, Mint) | [hollowlauncher_0.9.2_amd64.deb](https://github.com/PrimeEcto/hollow-archive-downloads/releases/download/v0.9.2/hollowlauncher_0.9.2_amd64.deb) | 102 MB | `3e19237ca701e377d8331f50c221b89fb5ce8b7042a67ae8ec7803a17ce54947` |
 
 One launcher, one job: sign in with Microsoft, and it installs and keeps updated a curated
 Fabric 1.21.4 client — the Archive preset, its mods, and the Complementary Reimagined shader
 pack — then starts the game with the server already in your multiplayer list. Java Edition is
 what this launcher runs.
 
+The preset also carries **Simple Voice Chat**, so proximity chat is possible on the server side
+without anyone adding a mod by hand. The client half is in the preset; the server's half (the
+matching `voicechat` plugin) is not live yet, so there is nothing to hear until it is.
+
 ## Windows
 
-Run `HollowLauncher-0.9.1-setup.exe`. The wizard asks you four things, in this order:
+Run `HollowLauncher-0.9.2-setup.exe`. The wizard asks you four things, in this order:
 
 1. **The agreement.** The terms you are accepting are in
    [`TERMS-OF-SERVICE.md`](TERMS-OF-SERVICE.md), shown in full in the installer. **Next** stays
@@ -61,7 +65,7 @@ handles it — on Pop!_OS, double-clicking the file opens the COSMIC store and i
 there. From a terminal, the same thing:
 
 ```bash
-sudo apt install ./hollowlauncher_0.9.1_amd64.deb
+sudo apt install ./hollowlauncher_0.9.2_amd64.deb
 ```
 
 It goes where Debian packages go, not into a directory you pick:
@@ -84,12 +88,12 @@ anything about the launcher surprises you.
 
 ```bash
 # Linux
-sha256sum hollowlauncher_0.9.1_amd64.deb
+sha256sum hollowlauncher_0.9.2_amd64.deb
 ```
 
 ```powershell
 # Windows (PowerShell)
-Get-FileHash .\HollowLauncher-0.9.1-setup.exe -Algorithm SHA256
+Get-FileHash .\HollowLauncher-0.9.2-setup.exe -Algorithm SHA256
 ```
 
 Compare the result with the table above, or with [`SHA256SUMS`](SHA256SUMS) in this repository,
@@ -134,6 +138,7 @@ That gap is documented, not hidden, and it is the next thing on this list.
 
 | Version | Date | Windows | Linux | Notes |
 | --- | --- | --- | --- | --- |
+| 0.9.2 | 2026-09-16 | `HollowLauncher-0.9.2-setup.exe` | `hollowlauncher_0.9.2_amd64.deb` | The first screen and the whole interface speak a player's language ("Hollow — Complementary / 49 components · Performance + Visuals") instead of bundling mod counts and loader versions, and the curated preset was republished as preset-1.0.1 with Simple Voice Chat in it. |
 | 0.9.1 | 2026-09-15 | `HollowLauncher-0.9.1-setup.exe` | `hollowlauncher_0.9.1_amd64.deb` | Windows sign-in fixed (the engine's data folder is created when the account is written), signing out added to Settings, and the curated preset published so a first run installs it with nothing configured. |
 | 0.9.0 | 2026-09-15 | `HollowLauncher-0.9.0-setup.exe` | `hollowlauncher_0.9.0_amd64.deb` | First published installers: branded setup wizard with the agreement and shortcut options, and a package-manager-ready Linux build. |
 
